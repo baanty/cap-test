@@ -1,0 +1,259 @@
+
+
+---------------
+
+package com;
+
+public class DemoOneCap {
+
+	public static void main(String... arguments) {
+		System.out.println("Printed From DemoCap");
+	}
+}
+
+
+-----------
+
+package com.solution;
+
+import java.util.Map;
+
+/**
+ * The shape Service will do necessary functionalities of 
+ * a proper shape.
+ * 
+ * @author 254584
+ *
+ */
+public interface ShapeService {
+	
+	/**
+	 * This method will calculate the area of the shape.
+	 * @param sidesOrDiameter : The dimensions of the shape. Paas the number of dimensrions in an array.
+	 * 
+	 * @return : The calculated area.
+	 */
+	public float calculateArea(String... sidesOrDiameter);
+	
+	/**
+	 * This method calculates the perimeter of the shape.
+	 * @param sidesOrDiameter : The dimensions of the shape. Paas the number of dimensrions in an array.
+	 * @return : The perimeter of the shape.
+	 */
+	public float caculcatePermimeter(String... sidesOrDiameter);
+	
+	/**
+	 * Extract the attributes of the shape in a nice and easy <code>Map</<code> structure.
+	 * 
+	 * @param sidesOrDiameter : The dimensions of the shape. Paas the number of dimensions in an array.
+	 * @return : The <code>Map</code> of the attributes.
+	 */
+	public Map<String, String> extractAttributes(String... sidesOrDiameter);
+	
+	
+
+}
+----------------
+
+package com.solution;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class ShapeServiceCircleImpl implements ShapeService {
+
+	@Override
+	public float calculateArea(String... sidesOrDiameter) {
+		return ( 3.14f * Float.parseFloat(sidesOrDiameter[0]) * Float.parseFloat(sidesOrDiameter[0]) );
+	}
+
+	@Override
+	public float caculcatePermimeter(String... sidesOrDiameter) {
+		return ( 2 * 3.14f * Float.parseFloat(sidesOrDiameter[0])  );
+	}
+
+	@Override
+	public Map<String, String> extractAttributes(String... sidesOrDiameter) {
+		Map<String, String> properties = new HashMap<String, String>();
+		properties.put("diameter", sidesOrDiameter[0]);
+		properties.put("type_of_shape", "Circle");
+		return properties;
+	}
+
+}
+-----------------
+
+package com.solution;
+
+/**
+ * Use this class to make the Shape instance for the service.
+ * 
+ * @author 254584
+ *
+ */
+public abstract class ShapeServiceFactory {
+
+	
+	/**
+	 * Use this factory method to get the proper instance#of the concrete
+	 * implementation of the shape service.
+	 * 
+	 * @param sidesOrDiameter
+	 * @return : <code>ShapeService</code> concrete implementation object.
+	 */
+	public static ShapeService shapeServiceFactory(String... sidesOrDiameter) {
+		
+		if ( sidesOrDiameter != null ) {
+			
+			if ( sidesOrDiameter.length == 1 ) {
+				return new ShapeServiceCircleImpl();
+			} else if ( sidesOrDiameter.length == 2 ) {
+				
+				if ( sidesOrDiameter[0].equals(sidesOrDiameter[1])) {
+					return new ShapeServiceSquareImpl();
+				}
+				return new ShapeServiceRectangleImpl();
+			}
+			
+		}
+		
+		return null;
+	}
+}
+
+
+-----------------------
+
+package com.solution;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class ShapeServiceRectangleImpl implements ShapeService {
+
+	@Override
+	public float calculateArea(String... sidesOrDiameter) {
+		return ( Float.parseFloat(sidesOrDiameter[0]) * Float.parseFloat(sidesOrDiameter[1]) );
+	}
+
+	@Override
+	public float caculcatePermimeter(String... sidesOrDiameter) {
+		return ( 2 * ( ( Float.parseFloat(sidesOrDiameter[0]) + Float.parseFloat(sidesOrDiameter[1]) ) ) );
+	}
+
+	@Override
+	public Map<String, String> extractAttributes(String... sidesOrDiameter) {
+		Map<String, String> properties = new HashMap<String, String>();
+		properties.put("side_1", sidesOrDiameter[0]);
+		properties.put("side_2", sidesOrDiameter[1]);
+		properties.put("type_of_shape", "Rectangle");
+		return properties;
+	}
+
+}
+-------------
+
+package com.solution;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class ShapeServiceSquareImpl implements ShapeService {
+
+	@Override
+	public float calculateArea(String... sidesOrDiameter) {
+		return ( Float.parseFloat(sidesOrDiameter[0]) * Float.parseFloat(sidesOrDiameter[0]) );
+	}
+
+	@Override
+	public float caculcatePermimeter(String... sidesOrDiameter) {
+		return ( 4 * Float.parseFloat(sidesOrDiameter[0]) );
+	}
+
+	@Override
+	public Map<String, String> extractAttributes(String... sidesOrDiameter) {
+		Map<String, String> properties = new HashMap<String, String>();
+		properties.put("side", sidesOrDiameter[0]);
+		properties.put("type_of_shape", "Square");
+		return properties;
+	}
+
+}
+-----------
+
+
+package test;
+
+import java.util.Map.Entry;
+
+import com.solution.ShapeService;
+import com.solution.ShapeServiceFactory;
+
+public class TestShapeService {
+
+	public static void main(String[] args) {
+		ShapeService squareShapeService = ShapeServiceFactory.shapeServiceFactory("10", "10");
+		ShapeService rectangleShapeService = ShapeServiceFactory.shapeServiceFactory("10", "20");
+		ShapeService circleShapeService = ShapeServiceFactory.shapeServiceFactory("30");
+		
+		Float sqPerimeter = squareShapeService.caculcatePermimeter("10", "10");
+		Float sqArea = squareShapeService.calculateArea("10", "10");
+		
+		Float rctPerimeter = rectangleShapeService.caculcatePermimeter("10", "20");
+		Float rctArea = rectangleShapeService.calculateArea("10", "20");
+		
+		Float circlePerimeter = circleShapeService.caculcatePermimeter("30");
+		Float circleArea = circleShapeService.calculateArea("30");
+		
+		System.out.println("sqPerimeter - " + sqPerimeter);
+		System.out.println("sqArea - " + sqArea);
+		
+		System.out.println("rctPerimeter - " + rctPerimeter);
+		System.out.println("rctArea - " + rctArea);
+		
+		System.out.println("circlePerimeter - " + circlePerimeter);
+		System.out.println("circleArea - " + circleArea);
+		
+		for ( Entry<String, String> attrb : squareShapeService.extractAttributes("10", "10").entrySet()) {
+			System.out.println("Key - " + attrb.getKey() );
+			System.out.println("Value - " + attrb.getValue() );
+		}
+		
+		for ( Entry<String, String> attrb : rectangleShapeService.extractAttributes("10", "20").entrySet()) {
+			System.out.println("Key - " + attrb.getKey() );
+			System.out.println("Value - " + attrb.getValue() );
+		}
+		
+		for ( Entry<String, String> attrb : circleShapeService.extractAttributes("30").entrySet()) {
+			System.out.println("Key - " + attrb.getKey() );
+			System.out.println("Value - " + attrb.getValue() );
+		}
+
+	}
+
+}
+-----------------
+
+
+A mathematical application must be able to define the following shapes: Requirement:  Square Rectangle Circle
+
+For each shape the application must be able to calculate a number of properties based on the measurements of that shape. 
+
+INPUT: Each shape is to be defined using the minimum number of measurements necessary to the size and type of shape. 
+
+OUTPUT: For each shape the application must be able to answer the following information: 
+	The area of the shape 
+	The total distance around the edge(s) of the shape The number of sides the shape has
+	Other attributes that are applicable depending on the type of the shape (e.g. a Circle has a diameter)
+
+
+
+
+TEST CASES: Write JUnit test cases (preferably) If you are not comfortable in JUnit, write a main method in a separate class to test your code. 
+NOTE: The test will be done using Eclipse IDE. Use object oriented programming concepts in your design. 
+If you are using main method to test your code, you don’t need to get the input from the console. You can just pass the arguments to your method to test your code.
+
+---------------------------------
+sanjeev.a.shukla@capgemini.com
+
+kapil.lakhe@capgemini.com
